@@ -1,0 +1,12 @@
+{
+  "name": "horta-automatica",
+  "displayName": "Horta Automatica",
+  "expo": {
+    "name": "Horta Automatica",
+    "slug": "horta-automatica",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
