@@ -9,8 +9,7 @@ WiFiServer server(80);
 // Componentes
 int LED = D5;
 
-void setup()
-{
+void setup() {
   // Declara Componentes
   pinMode(LED, OUTPUT);
 
@@ -18,8 +17,7 @@ void setup()
   Serial.begin(115200);
   delay(10);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED)
-  {
+  while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
@@ -32,8 +30,7 @@ void setup()
   Serial.println(WiFi.localIP());
 }
 
-void returnJson(WiFiClient client)
-{
+void returnJson(WiFiClient client) {
   client.println("HTTP/1.1 200 OK");
   client.println("Content-Type: application/json");
   client.println("");
@@ -41,21 +38,23 @@ void returnJson(WiFiClient client)
   delay(1);
 }
 
-void router(String request)
-{
-  if (request.indexOf("ledon") != -1)
-  {
+void router(String request) {
+  if (request.indexOf("ledon") != -1) {
     digitalWrite(LED, HIGH);
   }
-  if (request.indexOf("ledoff") != -1)
-  {
+  if (request.indexOf("ledoff") != -1) {
     digitalWrite(LED, LOW);
   }
 }
 
-void loop()
-{
+void loop() {
   WiFiClient client = server.available();
+  if (!client) {
+    return;
+  }
+  while (!client.available()) {
+    delay(1);
+  }
   String request = client.readStringUntil('\r');
   client.flush();
 
