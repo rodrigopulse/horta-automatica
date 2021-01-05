@@ -14,48 +14,35 @@ void setup()
   // Declara Componentes
   pinMode(LED, OUTPUT);
 
+  // Conexão wifi
   Serial.begin(115200);
   delay(10);
-
-  Serial.println("");
-  Serial.println("");
-  Serial.print("Conectando a ");
-  Serial.print(ssid);
-
   WiFi.begin(ssid, password);
-
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("");
   Serial.print("Conectado a rede sem fio ");
   Serial.println(ssid);
-
   server.begin();
   Serial.println("Servidor iniciado");
-
   Serial.print("IP para se conectar ao NodeMCU: ");
   Serial.print("http://");
   Serial.println(WiFi.localIP());
 }
 
-void loop()
+void returnJson(WiFiClient client)
 {
-  WiFiClient client = server.available();
-  if (!client)
-  {
-    return;
-  }
-  Serial.println("Novo cliente se conectou!");
-  while (!client.available())
-  {
-    delay(1);
-  }
-  String request = client.readStringUntil('\r');
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: application/json");
+  client.println("");
+  client.println("{\"teste\": \"teste\"}");
+  delay(1);
+}
 
-  client.flush();
+void router(String request)
+{
   if (request.indexOf("ledon") != -1)
   {
     digitalWrite(LED, HIGH);
@@ -64,10 +51,14 @@ void loop()
   {
     digitalWrite(LED, LOW);
   }
+}
 
-  client.println("HTTP/1.1 200 OK");
-  client.println("Content-Type: application/json");
-  client.println("");
-  client.println("{\"teste\": \"teste\"}");
-  delay(1);
+void loop()
+{
+  WiFiClient client = server.available();
+  String request = client.readStringUntil('\r');
+  client.flush();
+
+  router(request);
+  returnJson(client);
 }
